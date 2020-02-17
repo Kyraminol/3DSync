@@ -9,6 +9,7 @@
 
 #include <curl/curl.h>
 
+#include "libs/inih/INIReader/INIReader.h"
 #include "modules/dropbox.h"
 
 #define DEBUG 1
@@ -26,14 +27,15 @@ std::vector<std::string> recurse_dir(std::string basepath, std::string additiona
             paths.insert(paths.end(), recurse.begin(), recurse.end());
         }
     } else {
-        paths.push_back(additionalpath);
+        if(additionalpath != "") paths.push_back(additionalpath);
+        else printf("Folder /3ds/Checkpoint/saves not found\n");
     }
     closedir(dir);
     return paths;
 }
 
-
-int main(int argc, char** argv){
+bool componentsInit(){
+    bool result = true;
     gfxInitDefault();
 
     consoleInit(GFX_BOTTOM, NULL);
@@ -42,8 +44,7 @@ int main(int argc, char** argv){
     printf("\n\n\n\n\n\n Commit: " CONSOLE_BLUE REVISION_STRING CONSOLE_RESET);
 
     consoleInit(GFX_TOP, NULL);
-    printf("Initializing components...\r");
-    printf("OO\n");
+    printf("Initializing components...\n\n");
     
     APT_SetAppCpuTimeLimit(30);
     cfguInit();
@@ -53,28 +54,47 @@ int main(int argc, char** argv){
     acInit();
 
     u32* socketBuffer = (u32*)memalign(0x1000, 0x100000);
-    if(socketBuffer == NULL) printf("Failed to create socket buffer.\n");
-    if(socInit(socketBuffer, 0x100000)) printf("socInit failed.\n");
+    if(socketBuffer == NULL){printf("Failed to create socket buffer.\n"); result = false;}
+    if(socInit(socketBuffer, 0x100000)){printf("socInit failed.\n"); result = false;}
 
     httpcInit(0);
     sslcInit(0);
-    
-    
-    FILE *cfg = fopen("3ds/3DSync/3DSync.cfg", "r");
-    std::string dropboxtoken = "";
-    if(cfg){
-        char buff[255];
-        fgets(buff, 255, cfg);
-        dropboxtoken = std::string(buff);
+    return result;
+}
+
+void componentsExit(){
+    sslcExit();
+    httpcExit();
+    socExit();
+    acExit();
+    pxiDevExit();
+    romfsExit();
+    cfguExit();
+    gfxExit();
+}
+
+
+int main(int argc, char** argv){
+    if(!componentsInit()) componentsExit();
+
+    INIReader reader("/3ds/3DSync/3DSync.ini");
+
+    if(reader.ParseError() < 0){
+        printf("Can't load configuration\n");
+    } else {
+        std::string dropboxToken = reader.Get("Dropbox", "token", "");
+        if(dropboxToken != ""){
+            Dropbox dropbox(dropboxToken);
+            std::string basePath = "/3ds/Checkpoint/saves";
+            std::vector<std::string> paths = recurse_dir(basePath);
+            if((int)paths.size() > 0) dropbox.upload(basePath, paths);
+            else printf("Nothing to upload\n");
+        } else {
+            printf("Can't load Dropbox token from 3DSync.ini\n");
+        }
     }
-    
-    Dropbox dropbox(dropboxtoken);
-    std::string basePath = "/3ds/Checkpoint/saves";
-    std::vector<std::string> paths = recurse_dir(basePath);
 
-    dropbox.upload(basePath, paths);
-
-
+    printf("\n\nPress START to exit...");
     while (aptMainLoop()){
         hidScanInput();
         u32 kDown = hidKeysDown();
@@ -84,6 +104,6 @@ int main(int argc, char** argv){
         gspWaitForVBlank();
     }
 
-    gfxExit();
+    componentsExit();
     return 0;
 }
