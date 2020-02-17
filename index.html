@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>3DSync Configurator</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="static/libs/materializecss/materialize.min.css">
+  <link rel="stylesheet" href="static/libs/materialize-stepper/mstepper.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+</head>
+<body>
+<header>
+  <nav class="blue darken-2">
+    <div class="nav-wrapper container">
+      <a href="#" class="brand-logo left">3DSync Configurator</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="container">
+    <div class="row">
+      <div class="col s12">
+        <div class="card-panel blue">
+            <ul class="stepper">
+                <li class="step active">
+                    <div class="step-title white-text">Login with Dropbox</div>
+                    <div class="step-content">
+                        <div class="step-actions">
+                            <a href="#" id="dropbox-login" class="btn blue darken-3"><i class="fa fa-dropbox left"></i> Login</a>
+                        </div>
+                    </div>
+                </li>
+                <li class="step">
+                    <div class="step-title waves-effect">E-mail</div>
+                    <div class="step-content">
+                        <div class="step-actions">
+                            <a class="waves-effect waves-dark btn-flat previous-step">BACK</a>
+                            <a class="waves-effect waves-dark btn next-step">CONTINUE</a> 
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            
+        </div>
+      </div>
+    </div>
+    <div class="row">
+    </div>
+  </div>
+</main>
+
+<footer class="page-footer blue darken-2">
+  <div class="container">
+    <div class="row">
+      <div class="col l6 s12">
+        <h5 class="white-text"></h5>
+        <ul>
+          <li><a class="grey-text text-lighten-3" href="https://materializecss.com/">© Materialize</a></li>
+          <li><a class="grey-text text-lighten-3" href="https://fontawesome.com/">© Fonticons</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-copyright blue darken-3">
+    <div class="container">
+      <a class="grey-text text-lighten-4 right" href="https://github.com/Kyraminol/3DSync" target="_blank"><i class="fa fa-github"></i><span> Source Code</span></a>
+    </div>
+  </div>
+</footer>
+
+<script src="static/libs/jquery-3.4.1.min.js"></script>
+<script src="static/libs/materializecss/materialize.min.js"></script>
+<script src="static/libs/materialize-stepper/mstepper.min.js"></script>
+<script src="static/js/index.js"></script>
+</body>
+</html>
