@@ -1,11 +1,11 @@
 $(function(){
     let firstActive = 0;
-    let url = new URL(window.location.href);
-    let code = url.searchParams.get("code");
-    let state = url.searchParams.get("state");
-    if(code !== null && state !== null){
+    let params = new URLSearchParams(window.location.hash.substr(1));
+    let token = params.get('access_token');
+    let state = params.get('state');
+    if(token !== null && state !== null){
         if(state === localStorage.getItem('token')){
-            localStorage.setItem('dropboxToken', code);
+            localStorage.setItem('dropboxToken', token);
             firstActive = 1;
         }
     }
@@ -21,7 +21,7 @@ $(function(){
         e.preventDefault();
         let token = [...Array(100)].map(i=>(~~(Math.random()*36)).toString(36)).join('');
         localStorage.setItem('token', token);
-        window.location.href = "https://www.dropbox.com/oauth2/authorize?client_id=3x8ipjhtplvcoba&response_type=code&redirect_uri=https://kyraminol.github.io/3DSync/&state=" + token;
+        window.location.href = "https://www.dropbox.com/oauth2/authorize?client_id=3x8ipjhtplvcoba&response_type=token&redirect_uri=https://kyraminol.github.io/3DSync/&state=" + token;
     });
 
     $('#download-config').on('click', function(e){
