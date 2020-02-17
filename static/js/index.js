@@ -26,7 +26,7 @@ $(function(){
 
     $('#download-config').on('click', function(e){
         e.preventDefault();
-        let blob = new Blob(["[Dropbox]\nToken=" + localStorage.getItem('dropboxToken')], {type: "application/octet-stream;charset=utf-8"});
+        let blob = new Blob(["[Dropbox]\nToken=" + localStorage.getItem('dropboxToken') + '\n'], {type: "application/octet-stream;charset=utf-8"});
         saveAs(blob, "3DSync.ini");
     });
 });
