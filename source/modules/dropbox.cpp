@@ -8,7 +8,7 @@ void Dropbox::upload(std::string basePath, std::vector<std::string> paths){
         std::string path(basePath + *it);
         printf("Uploading %s\n  ", path.c_str());
         FILE *file = fopen(path.c_str(), "rb");
-        std::string args = "Dropbox-API-Arg: {\"path\":\"" + *it + "\"}";
+        std::string args = "Dropbox-API-Arg: {\"path\":\"" + *it + "\",\"mode\": \"add\",\"mute\": false,\"strict_conflict\": false}";
         std::string auth("Authorization: Bearer " + _token);
         struct curl_slist *headers = NULL;
         headers = curl_slist_append(headers, auth.c_str());
@@ -19,6 +19,7 @@ void Dropbox::upload(std::string basePath, std::vector<std::string> paths){
         _curl.setHeaders(headers);
         _curl.setReadData((void *)file);
         _curl.perform();
+        fclose(file);
         printf("\n");
     }
 }
