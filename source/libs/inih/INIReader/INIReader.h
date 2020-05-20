@@ -61,6 +61,8 @@ public:
 
     // Return true if a value exists with the given section and field names.
     bool HasValue(const std::string& section, const std::string& name) const;
+    
+    std::map<std::string, std::string> GetValues() const;
 
 private:
     int _error;

@@ -28,7 +28,7 @@ std::vector<std::string> recurse_dir(std::string basepath, std::string additiona
         }
     } else {
         if(additionalpath != "") paths.push_back(additionalpath);
-        else printf("Folder /3ds/Checkpoint/saves not found\n");
+        else printf("Folder %s not found\n", basepath.c_str());
     }
     closedir(dir);
     return paths;
@@ -83,12 +83,17 @@ int main(int argc, char** argv){
         printf("Can't load configuration\n");
     } else {
         std::string dropboxToken = reader.Get("Dropbox", "token", "");
+        
         if(dropboxToken != ""){
             Dropbox dropbox(dropboxToken);
-            std::string basePath = "/3ds/Checkpoint/saves";
-            std::vector<std::string> paths = recurse_dir(basePath);
-            if((int)paths.size() > 0) dropbox.upload(basePath, paths);
-            else printf("Nothing to upload\n");
+            std::map<std::string, std::string> values = reader.GetValues();
+            for(auto value : values){
+                if(value.first.rfind("path", 0) == 0){
+                    std::cout << value.second << std::endl;
+                    std::vector<std::string> paths = recurse_dir(value.second);
+                    if((int)paths.size() > 0) dropbox.upload(value.second, paths);
+                }
+            }
         } else {
             printf("Can't load Dropbox token from 3DSync.ini\n");
         }

@@ -102,6 +102,11 @@ string INIReader::MakeKey(const string& section, const string& name)
     return key;
 }
 
+std::map<std::string, std::string> INIReader::GetValues() const
+{
+    return _values;
+};
+
 int INIReader::ValueHandler(void* user, const char* section, const char* name,
                             const char* value)
 {
