@@ -1,18 +1,19 @@
 #include "curl.h"
 
-
 Curl::Curl(){
     curl_global_init(CURL_GLOBAL_ALL);
     _curl = curl_easy_init();
     if(!_curl) printf("Failed to init libcurl.\n");
-    curl_easy_setopt(_curl, CURLOPT_USERAGENT, "3DSync/0.1.0");
+    curl_easy_setopt(_curl, CURLOPT_USERAGENT, "3DSync/" VERSION_STRING);
     curl_easy_setopt(_curl, CURLOPT_CONNECTTIMEOUT, 50L);
     curl_easy_setopt(_curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(_curl, CURLOPT_FAILONERROR, 1L);
     curl_easy_setopt(_curl, CURLOPT_NOPROGRESS, 1L);
     curl_easy_setopt(_curl, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(_curl, CURLOPT_PIPEWAIT, 1L);
+    curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, _write_callback);
     #ifdef DEBUG
+        curl_easy_setopt(_curl, CURLOPT_WRITEFUNCTION, fwrite);
         curl_easy_setopt(_curl, CURLOPT_VERBOSE, 1L);
     #endif
 }
@@ -48,6 +49,13 @@ size_t Curl::_read_callback(void *ptr, size_t size, size_t nmemb, void *userdata
     curl_off_t nread;
     size_t retcode = fread(ptr, size, nmemb, readhere);
     nread = (curl_off_t)retcode;
-    printf("*** We read %" CURL_FORMAT_CURL_OFF_T " bytes from file\n", nread);
+    if(nread > 0){
+        printf("Sent %" CURL_FORMAT_CURL_OFF_T " bytes from file\n", nread);
+    }
     return retcode;
+}
+
+size_t Curl::_write_callback(void *data, size_t size, size_t nmemb, void* userdata){
+    size_t newLength = size*nmemb;
+    return newLength;
 }

@@ -12,8 +12,6 @@
 #include "libs/inih/INIReader/INIReader.h"
 #include "modules/dropbox.h"
 
-#define DEBUG 1
-
 
 std::vector<std::string> recurse_dir(std::string basepath, std::string additionalpath=""){
     std::vector<std::string> paths;
@@ -87,13 +85,14 @@ int main(int argc, char** argv){
         if(dropboxToken != ""){
             Dropbox dropbox(dropboxToken);
             std::map<std::string, std::string> values = reader.GetValues();
+            std::map<std::pair<std::string, std::string>, std::vector<std::string>> paths;
             for(auto value : values){
-                if(value.first.rfind("path", 0) == 0){
-                    std::cout << value.second << std::endl;
-                    std::vector<std::string> paths = recurse_dir(value.second);
-                    if((int)paths.size() > 0) dropbox.upload(value.second, paths);
+                if(value.first.rfind("paths=", 0) == 0){
+                    std::pair<std::string, std::string> key = std::make_pair(value.second, value.first.substr(6));
+                    paths[key] = recurse_dir(value.second);
                 }
             }
+            if((int)paths.size() > 0) dropbox.upload(paths);
         } else {
             printf("Can't load Dropbox token from 3DSync.ini\n");
         }

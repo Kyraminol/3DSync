@@ -16,6 +16,7 @@ class Curl{
     private:
         CURL *_curl;
         static size_t _read_callback(void *ptr, size_t size, size_t nmemb, void *userdata);
+        static size_t _write_callback(void *data, size_t size, size_t nmemb, void *userdata);
 };
 
 
