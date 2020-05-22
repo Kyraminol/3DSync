@@ -7,7 +7,7 @@ $(function(){
     let stepperInstace = new MStepper(document.querySelector('.stepper'), {
         firstActive: 0,
         autoFormCreation: false,
-        stepTitleNavigation: true,
+        stepTitleNavigation: false,
     });
 
     if(token !== null && state !== null){
@@ -63,6 +63,27 @@ $(function(){
         $(this).before($input);
     });
 
+    const pathRegex = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+
+    function pathParse(path){
+        let parts = pathRegex.exec(path).slice(1);
+        if (!parts || parts.length !== 4) {
+            return false;
+        }
+        parts[1] = parts[1] || '';
+        parts[2] = parts[2] || '';
+        parts[3] = parts[3] || '';
+
+        return {
+            root: parts[0],
+            dir: parts[0] + parts[1].slice(0, -1),
+            base: parts[2],
+            ext: parts[3],
+            name: parts[2].slice(0, parts[2].length - parts[3].length)
+        };
+    }
+
+
     $('#folders-confirm').on('click', function(e){
         e.preventDefault();
         paths = [];
@@ -71,19 +92,21 @@ $(function(){
             let $this = $(this);
             if($this.hasClass('path-custom')){
                 let path = $this.val();
-                let regex = /((?:[^/]*\/)*)(.*)/.exec(path);
-                if(regex[1] === ""){
+                let pathCheck = pathParse(path);
+                console.log(pathCheck);
+                if(pathCheck === false){
                     error = true;
                     $this.addClass('invalid');
                 } else {
                     $this.removeClass('invalid');
+                    let pathSync = pathCheck['ext'] === '' ? pathCheck['dir'] + '/' + pathCheck['base'] : pathCheck['dir'];
                     let $name = $('#' + $this.attr('id') + '-n');
                     if($name.val() === ''){
                         error = true;
                         $name.addClass('invalid');
                     } else {
                         $name.removeClass('invalid');
-                        paths.push([$name.val(), regex[1]]);
+                        paths.push([$name.val(), pathSync]);
                     }
                 }
             } else {
