@@ -1,22 +1,22 @@
 $(function(){
-    let firstActive = 0;
     let params = new URLSearchParams(window.location.hash.substr(1));
     let token = params.get('access_token');
     let state = params.get('state');
     let paths = [];
+
+    let stepperInstace = new MStepper(document.querySelector('.stepper'), {
+        firstActive: 0,
+        autoFormCreation: false,
+        stepTitleNavigation: true,
+    });
+
     if(token !== null && state !== null){
         if(state === localStorage.getItem('token')){
             localStorage.setItem('dropboxToken', token);
-            firstActive = 1;
+            stepperInstace.nextStep();
         }
     }
     localStorage.removeItem('token');
-
-    let stepperInstace = new MStepper(document.querySelector('.stepper'), {
-        firstActive: firstActive,
-        autoFormCreation: false,
-        stepTitleNavigation: false,
-    });
 
     $('#dropbox-login').on('click', function(e){
         e.preventDefault();
