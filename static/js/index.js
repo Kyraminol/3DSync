@@ -25,13 +25,17 @@ $(function(){
         window.location.href = "https://www.dropbox.com/oauth2/authorize?client_id=3x8ipjhtplvcoba&response_type=token&redirect_uri=https://kyraminol.github.io/3DSync/&state=" + token;
     });
 
-    $('#download-config').on('click', function(e){
-        e.preventDefault();
+    function getConfigString(){
         let strPaths = '';
         paths.forEach(function(path){
             strPaths += path[0] + '=' + path[1] + '\n';
         });
-        let blob = new Blob(['[Dropbox]\nToken=' + localStorage.getItem('dropboxToken') + '\n' + '[Paths]\n' + strPaths], {type: "application/octet-stream;charset=utf-8"});
+        return '[Dropbox]\nToken=' + localStorage.getItem('dropboxToken') + '\n' + '[Paths]\n' + strPaths;
+    }
+
+    $('#download-config').on('click', function(e){
+        e.preventDefault();
+        let blob = new Blob([getConfigString()], {type: "application/octet-stream;charset=utf-8"});
         const fileStream = streamSaver.createWriteStream('3DSync.ini', {
             size: blob.size
         });
