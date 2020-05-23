@@ -97,20 +97,34 @@ $(function(){
             if($this.hasClass('path-custom')){
                 let path = $this.val();
                 let pathCheck = pathParse(path);
-                console.log(pathCheck);
                 if(pathCheck === false){
                     error = true;
                     $this.addClass('invalid');
                 } else {
-                    $this.removeClass('invalid');
-                    let pathSync = pathCheck['ext'] === '' ? pathCheck['dir'] + '/' + pathCheck['base'] : pathCheck['dir'];
-                    let $name = $('#' + $this.attr('id') + '-n');
-                    if($name.val() === ''){
-                        error = true;
-                        $name.addClass('invalid');
+                    let pathSync = '';
+                    if(pathCheck['ext'] === ''){
+                        pathSync += pathCheck['dir'];
+                        if(pathCheck['dir'] !== '/'){
+                            pathSync += '/';
+                        }
+                        pathSync += pathCheck['base'];
                     } else {
-                        $name.removeClass('invalid');
-                        paths.push([$name.val(), pathSync]);
+                        if(pathCheck['dir'] === ''){
+                            error = true;
+                        }
+                        pathSync += pathCheck['dir'];
+                    }
+                    if(pathSync.startsWith('/') === false) pathSync = '/' + pathSync;
+                    if(error === false){
+                        $this.removeClass('invalid');
+                        let $name = $('#' + $this.attr('id') + '-n');
+                        if ($name.val() === '') {
+                            error = true;
+                            $name.addClass('invalid');
+                        } else {
+                            $name.removeClass('invalid');
+                            paths.push([$name.val(), pathSync]);
+                        }
                     }
                 }
             } else {
